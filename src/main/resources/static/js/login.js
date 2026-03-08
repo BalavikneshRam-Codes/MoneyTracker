@@ -21,14 +21,6 @@ $(function () {
      }
 
      /* ── Show / hide API-level alert banner ── */
-     function showApiAlert(msg, isSuccess) {
-         const $alert = $('#apiAlert');
-         $('#apiAlertMsg').text(msg);
-         $alert
-             .removeClass('alert-custom alert-success-custom')
-             .addClass(isSuccess ? 'alert-success-custom' : 'alert-custom')
-             .fadeIn(200);
-     }
      function hideApiAlert() { $('#apiAlert').fadeOut(150); }
 
      /* ── Shake the button on client-side error ── */
@@ -103,24 +95,16 @@ $(function () {
 
          const payload = {
              username:   $email.val().trim(),
-             password:   $pw.val().trim(),
+             passkey:   $pw.val().trim(),
          };
 
          $.ajax({
-             url:         '/api/auth/login',   // ← change to your actual endpoint
+             url:         '/userAuthenticate',   // ← change to your actual endpoint
              method:      'POST',
              contentType: 'application/json',
              data:        JSON.stringify(payload),
 
-             success: function (res) {
-                 showApiAlert('Login successful! Redirecting…', true);
-                 if (res.token) {
-                     localStorage.setItem('authToken', res.token);
-                 }
-                 setTimeout(function () {
-                     window.location.href = res.redirectUrl || '/dashboard';
-                 }, 800);
-             },
+             success: loginSuccessHandler,
              error: function (xhr) {
                  $btn.removeClass('loading').prop('disabled', false);
                  let msg = 'Invalid email or password. Please try again.';
@@ -144,3 +128,36 @@ $(function () {
      });
 
  });
+
+ function loginSuccessHandler(res){
+    if(res.status === "SUCCESS"){
+      showApiAlert('Login successful! Redirecting…', true);
+      if (res.token) {
+          localStorage.setItem('authToken', res.token);
+      }
+      setTimeout(function () {
+          window.location.href = res.redirectUrl || '/dashboard';
+      }, 800);
+      }else{
+        $btn.removeClass('loading').prop('disabled', false);
+         let msg = 'Invalid email or password. Please try again.';
+         try {
+             const body = JSON.parse(xhr.responseText);
+             if (body.message) msg = body.message;
+         } catch (_) {}
+         if (xhr.status === 401) msg = 'Invalid email or password.';
+         if (xhr.status === 403) msg = 'Your account has been locked. Please contact support.';
+         if (xhr.status === 429) msg = 'Too many attempts. Please wait a moment and try again.';
+         if (xhr.status === 0)   msg = 'Network error — please check your connection.';
+         showApiAlert(msg, false);
+         shakeBtn();
+      }
+ }
+  function showApiAlert(msg, isSuccess) {
+      const $alert = $('#apiAlert');
+      $('#apiAlertMsg').text(msg);
+      $alert
+          .removeClass('alert-custom alert-success-custom')
+          .addClass(isSuccess ? 'alert-success-custom' : 'alert-custom')
+          .fadeIn(200);
+  }

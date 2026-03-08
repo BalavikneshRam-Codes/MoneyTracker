@@ -3,7 +3,7 @@
 <body>
 
 <div th:fragment="header">
-    <input type="hidden" id="userId">
+    <input type="hidden" id="loggedUserId" th:value="${session.LoggedUserId}">
 </div>
 </body>
 </html>

@@ -5,7 +5,7 @@ import lombok.EqualsAndHashCode;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class BaseItemVO extends BaseVO{
-    private String status;
-    private String errorMessage;
+public class UserResponseVO extends BaseItemVO{
+    private Long userId;
+    private String redirectUrl;
 }

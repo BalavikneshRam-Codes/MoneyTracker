@@ -4,6 +4,8 @@ import com.bu.MoneyManage.Enum.StatusEnum;
 import com.bu.MoneyManage.service.INotesService;
 import com.bu.MoneyManage.vo.BaseItemVO;
 import com.bu.MoneyManage.vo.BaseVO;
+import com.bu.MoneyManage.vo.UserResponseVO;
+import jakarta.servlet.http.HttpServletRequest;
 import org.hibernate.boot.internal.Abstract;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -28,5 +30,9 @@ public abstract class BaseController {
         baseItemVO.setStatus(StatusEnum.FAILED.getStatus());
         baseItemVO.setErrorMessage(e.getMessage());
         return baseItemVO;
+    }
+    protected void setSessionValue(HttpServletRequest servletRequest, UserResponseVO userResponseVO){
+        if(servletRequest != null && servletRequest.getSession() != null)
+            servletRequest.getSession().setAttribute("LoggedUserId",userResponseVO.getUserId());
     }
 }

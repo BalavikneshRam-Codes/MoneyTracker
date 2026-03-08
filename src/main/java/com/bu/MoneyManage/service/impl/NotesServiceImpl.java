@@ -1,22 +1,14 @@
 package com.bu.MoneyManage.service.impl;
 
 import com.bu.MoneyManage.Enum.StatusEnum;
-import com.bu.MoneyManage.Repository.IAccountRepository;
-import com.bu.MoneyManage.Repository.ICategoryRepository;
-import com.bu.MoneyManage.Repository.INoteRepository;
-import com.bu.MoneyManage.Repository.ITransactionRepository;
+import com.bu.MoneyManage.Repository.*;
 import com.bu.MoneyManage.converter.IAccountConverter;
 import com.bu.MoneyManage.converter.ICategoryConverter;
 import com.bu.MoneyManage.converter.INoteConverter;
 import com.bu.MoneyManage.converter.ITransactionConverter;
-import com.bu.MoneyManage.entity.Account;
-import com.bu.MoneyManage.entity.Category;
-import com.bu.MoneyManage.entity.Notes;
-import com.bu.MoneyManage.entity.Transaction;
+import com.bu.MoneyManage.entity.*;
 import com.bu.MoneyManage.service.INotesService;
-import com.bu.MoneyManage.vo.BaseVO;
-import com.bu.MoneyManage.vo.NoteReqVO;
-import com.bu.MoneyManage.vo.NotesResponseVO;
+import com.bu.MoneyManage.vo.*;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -42,10 +34,12 @@ public class NotesServiceImpl implements INotesService {
     private ICategoryRepository categoryRepository;
     @Autowired
     private ICategoryConverter categoryConverter;
+    @Autowired
+    private IUserRepository userRepository;
 
     @Override
     @Transactional(rollbackOn = Exception.class)
-    public BaseVO createOrUpdateNote(BaseVO baseVO) {
+    public BaseVO createOrUpdateNote(BaseVO baseVO) throws Exception{
         NotesResponseVO notesResponseVO = null;
         try {
             if (baseVO instanceof NoteReqVO noteReqVO) {
@@ -57,13 +51,13 @@ public class NotesServiceImpl implements INotesService {
                 }
             }
         } catch (Exception e) {
-            throw new RuntimeException();
+            throw e;
         }
         return notesResponseVO;
     }
 
     @Override
-    public BaseVO fetchNotesInfo(BaseVO baseVO) {
+    public BaseVO fetchNotesInfo(BaseVO baseVO) throws Exception{
         NotesResponseVO notesResponseVO = null;
         try {
             if (baseVO instanceof NoteReqVO noteReqVO) {
@@ -73,10 +67,34 @@ public class NotesServiceImpl implements INotesService {
                 buildCategory(noteReqVO,notesResponseVO);
             }
         } catch (Exception e) {
-            throw new RuntimeException();
+            throw e;
         }
         return notesResponseVO;
     }
+
+    @Override
+    public BaseVO userAuthenticate(BaseVO baseVO) throws Exception{
+        UserResponseVO userResponseVO = null;
+        try {
+            if (baseVO instanceof UserReqVO userReqVO) {
+                if(userReqVO.getUsername() != null){
+                    userResponseVO = new UserResponseVO();
+                    Optional<User> user = userRepository.findByEmailAndStatus(userReqVO.getUsername(),StatusEnum.ACTIVE.getStatus());
+                    if(user.isPresent()){
+                        User user_ = user.get();
+                        if(!user_.getPassword().equals(userReqVO.getPasskey()))
+                            throw new Exception("Incorrect Password!!");
+                        userResponseVO.setUserId(user_.getUserId());
+                        userResponseVO.setRedirectUrl("/createNotes");
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw e;
+        }
+        return userResponseVO;
+    }
+
     private void buildAccount(NoteReqVO noteReqVO,NotesResponseVO notesResponseVO){
         Optional<List<Account>> account;
         if (noteReqVO.getUserId() != null && noteReqVO.getUserId() > 0)

@@ -42,7 +42,7 @@ public class NoteConverterImpl implements INoteConverter {
         notes.setNoteAmount(noteReqVO.getAmount());
         notes.setStatus(StatusEnum.ACTIVE.getStatus());
         if (noteReqVO.getUserId() != null && noteReqVO.getUserId() > 0)
-            notes.setUser(userRepository.getReferenceById(noteReqVO.getUserId()));
+            notes.setUser(userRepository.findByUserIdAndStatus(noteReqVO.getUserId(),StatusEnum.ACTIVE.getStatus()).orElse(null));
         return notes;
     }
 }
