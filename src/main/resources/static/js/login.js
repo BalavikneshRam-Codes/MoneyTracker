@@ -1,86 +1,146 @@
 $(function () {
 
-    /* ── Toggle password visibility ── */
-    $('#togglePw').on('click', function () {
-        const $input = $('#password');
-        const $icon  = $('#pwIcon');
-        const isHidden = $input.attr('type') === 'password';
-        $input.attr('type', isHidden ? 'text' : 'password');
-        $icon.toggleClass('bi-eye', !isHidden).toggleClass('bi-eye-slash', isHidden);
-    });
+     /* ══════════════════════════════════════════
+        Helpers
+     ══════════════════════════════════════════ */
+     const $email    = $('#username');
+     const $pw       = $('#password');
+     const $emailErr = $('#emailError');
+     const $pwErr    = $('#pwError');
 
-    /* ── Live validation helpers ── */
-    function showError($field, $err) {
-        $field.addClass('is-invalid');
-        $err.addClass('show-error');
-    }
-    function clearError($field, $err) {
-        $field.removeClass('is-invalid');
-        $err.removeClass('show-error');
-    }
+     function showFieldError($field, $err) {
+         $field.addClass('is-invalid');
+         $err.addClass('show-error');
+     }
+     function clearFieldError($field, $err) {
+         $field.removeClass('is-invalid');
+         $err.removeClass('show-error');
+     }
+     function isValidEmail(val) {
+         return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val);
+     }
 
-    const $email    = $('#username');
-    const $pw       = $('#password');
-    const $emailErr = $('#emailError');
-    const $pwErr    = $('#pwError');
+     /* ── Show / hide API-level alert banner ── */
+     function showApiAlert(msg, isSuccess) {
+         const $alert = $('#apiAlert');
+         $('#apiAlertMsg').text(msg);
+         $alert
+             .removeClass('alert-custom alert-success-custom')
+             .addClass(isSuccess ? 'alert-success-custom' : 'alert-custom')
+             .fadeIn(200);
+     }
+     function hideApiAlert() { $('#apiAlert').fadeOut(150); }
 
-    $email.on('blur', function () {
-        const val = $(this).val().trim();
-        const valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val);
-        valid || val === '' ? clearError($email, $emailErr) : showError($email, $emailErr);
-        if (val === '') showError($email, $emailErr);
-    }).on('input', function () {
-        if ($(this).hasClass('is-invalid')) {
-            const val = $(this).val().trim();
-            if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) clearError($email, $emailErr);
-        }
-    });
+     /* ── Shake the button on client-side error ── */
+     function shakeBtn() {
+         $('#submitBtn').css('animation', 'none');
+         setTimeout(function () {
+             $('#submitBtn').css('animation', 'shake 0.4s ease');
+             setTimeout(() => $('#submitBtn').css('animation', ''), 420);
+         }, 10);
+     }
 
-    $pw.on('blur', function () {
-        $(this).val().trim() === ''
-            ? showError($pw, $pwErr)
-            : clearError($pw, $pwErr);
-    }).on('input', function () {
-        if ($(this).hasClass('is-invalid') && $(this).val().trim() !== '') {
-            clearError($pw, $pwErr);
-        }
-    });
+     /* ══════════════════════════════════════════
+        Toggle password visibility
+     ══════════════════════════════════════════ */
+     $('#togglePw').on('click', function () {
+         const isHidden = $pw.attr('type') === 'password';
+         $pw.attr('type', isHidden ? 'text' : 'password');
+         $('#pwIcon')
+             .toggleClass('bi-eye',      !isHidden)
+             .toggleClass('bi-eye-slash', isHidden);
+     });
 
-    /* ── Form submit: validation + loading state ── */
-    $('#loginForm').on('submit', function (e) {
-        let valid = true;
+     /* ══════════════════════════════════════════
+        Live field validation
+     ══════════════════════════════════════════ */
+     $email
+         .on('blur', function () {
+             const val = $(this).val().trim();
+             !val || !isValidEmail(val)
+                 ? showFieldError($email, $emailErr)
+                 : clearFieldError($email, $emailErr);
+         })
+         .on('input', function () {
+             if ($(this).hasClass('is-invalid') && isValidEmail($(this).val().trim())) {
+                 clearFieldError($email, $emailErr);
+             }
+         });
 
-        const emailVal = $email.val().trim();
-        if (!emailVal || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailVal)) {
-            showError($email, $emailErr);
-            valid = false;
-        }
+     $pw
+         .on('blur', function () {
+             $(this).val().trim() === ''
+                 ? showFieldError($pw, $pwErr)
+                 : clearFieldError($pw, $pwErr);
+         })
+         .on('input', function () {
+             if ($(this).hasClass('is-invalid') && $(this).val().trim() !== '') {
+                 clearFieldError($pw, $pwErr);
+             }
+         });
 
-        if (!$pw.val().trim()) {
-            showError($pw, $pwErr);
-            valid = false;
-        }
+     /* ══════════════════════════════════════════
+        Client-side validation before API call
+     ══════════════════════════════════════════ */
+     function validateForm() {
+         let ok = true;
+         const emailVal = $email.val().trim();
+         if (!emailVal || !isValidEmail(emailVal)) { showFieldError($email, $emailErr); ok = false; }
+         if (!$pw.val().trim())                     { showFieldError($pw, $pwErr);       ok = false; }
+         if (!ok) shakeBtn();
+         return ok;
+     }
 
-        if (!valid) {
-            e.preventDefault();
-            // Shake animation
-            $('#loginForm').css('animation', 'none');
-            setTimeout(function () {
-                $('#submitBtn').css({
-                    animation: 'shake 0.4s ease',
-                });
-                setTimeout(() => $('#submitBtn').css('animation', ''), 400);
-            }, 10);
-            return;
-        }
+     /* ══════════════════════════════════════════
+        Login API call  (jQuery $.ajax)
+     ══════════════════════════════════════════ */
+     $('#submitBtn').on('click', function () {
+         hideApiAlert();
+         if (!validateForm()) return;
 
-        // Loading state
-        $('#submitBtn').addClass('loading').prop('disabled', true);
-    });
+         const $btn = $(this);
+         $btn.addClass('loading').prop('disabled', true);
 
-    /* ── Input focus: remove server-side error style ── */
-    $('.form-control-custom').on('focus', function () {
-        // Allow re-validation on re-focus
-    });
+         const payload = {
+             username:   $email.val().trim(),
+             password:   $pw.val().trim(),
+         };
 
-});
+         $.ajax({
+             url:         '/api/auth/login',   // ← change to your actual endpoint
+             method:      'POST',
+             contentType: 'application/json',
+             data:        JSON.stringify(payload),
+
+             success: function (res) {
+                 showApiAlert('Login successful! Redirecting…', true);
+                 if (res.token) {
+                     localStorage.setItem('authToken', res.token);
+                 }
+                 setTimeout(function () {
+                     window.location.href = res.redirectUrl || '/dashboard';
+                 }, 800);
+             },
+             error: function (xhr) {
+                 $btn.removeClass('loading').prop('disabled', false);
+                 let msg = 'Invalid email or password. Please try again.';
+                 try {
+                     const body = JSON.parse(xhr.responseText);
+                     if (body.message) msg = body.message;
+                 } catch (_) {}
+                 if (xhr.status === 401) msg = 'Invalid email or password.';
+                 if (xhr.status === 403) msg = 'Your account has been locked. Please contact support.';
+                 if (xhr.status === 429) msg = 'Too many attempts. Please wait a moment and try again.';
+                 if (xhr.status === 0)   msg = 'Network error — please check your connection.';
+                 showApiAlert(msg, false);
+                 shakeBtn();
+             }
+         });
+     });
+
+     /* ── Also allow Enter key to trigger login ── */
+     $('#loginForm').on('keydown', function (e) {
+         if (e.key === 'Enter') $('#submitBtn').trigger('click');
+     });
+
+ });

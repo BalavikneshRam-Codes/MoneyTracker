@@ -90,12 +90,16 @@
         </div>
         <!-- ──────────────────────────────────────────────── -->
 
-        <!-- Login Form -->
-        <form id="loginForm"
-              th:action="@{/login}"
-              action="#"
-              method="post"
-              novalidate>
+        <!-- Login Form (no <form> tag — API call via jQuery) -->
+        <div id="loginForm">
+
+            <!-- API error/success toast -->
+            <div id="apiAlert" style="display:none;" class="alert-custom" role="alert">
+                <i class="bi bi-exclamation-circle-fill"></i>
+                <span id="apiAlertMsg">Something went wrong.</span>
+            </div>
+
+            <!-- Email -->
             <div class="form-group fade-up delay-2">
                 <label class="form-label" for="username">Email address</label>
                 <div class="input-wrapper">
@@ -103,11 +107,8 @@
                             class="form-control-custom"
                             type="email"
                             id="username"
-                            name="username"
                             placeholder="you@example.com"
-                            th:value="${param.username}"
                             autocomplete="email"
-                            required
                     />
                     <i class="bi bi-envelope input-icon"></i>
                 </div>
@@ -124,10 +125,8 @@
                             class="form-control-custom"
                             type="password"
                             id="password"
-                            name="password"
                             placeholder="••••••••"
                             autocomplete="current-password"
-                            required
                     />
                     <i class="bi bi-lock input-icon"></i>
                     <button type="button" class="toggle-pw" id="togglePw" aria-label="Toggle password visibility">
@@ -139,30 +138,33 @@
                 </div>
             </div>
 
-            <div class="form-meta fade-up delay-3">
-                <label class="custom-check">
-                    <input type="checkbox" name="remember-me" id="rememberMe"/>
-                    <span>Remember me</span>
-                </label>
-                <a class="forgot-link" th:href="@{/forgot-password}" href="#">Forgot password?</a>
-            </div>
+            <!-- Remember / Forgot -->
+    <!--            <div class="form-meta fade-up delay-3">
+                    <label class="custom-check">
+                        <input type="checkbox" id="rememberMe"/>
+                        <span>Remember me</span>
+                    </label>
+                    <a class="forgot-link" th:href="@{/forgot-password}" href="#">Forgot password?</a>
+                </div>-->
 
+            <!-- Submit -->
             <div class="fade-up delay-4">
-                <button type="submit" class="btn-login" id="submitBtn">
+                <button type="button" class="btn-login" id="submitBtn">
                     <span class="btn-text">Sign in to FinFlow</span>
                     <div class="spinner"></div>
                 </button>
             </div>
 
-        </form>
+        </div>
 
         <!-- Divider -->
-        <!--<div class="divider fade-up delay-5">
+        <!--
+        <div class="divider fade-up delay-5">
             <span>or continue with</span>
-        </div>-->
+        </div>
 
-        <!-- OAuth -->
-        <!--<div class="oauth-row fade-up delay-5">
+       &lt;!&ndash; OAuth &ndash;&gt;
+        <div class="oauth-row fade-up delay-5">
             <a class="btn-oauth" th:href="@{/oauth2/authorization/google}" href="#">
                 &lt;!&ndash; Google SVG inline &ndash;&gt;
                 <svg width="18" height="18" viewBox="0 0 48 48">
@@ -189,21 +191,8 @@
 
     </div>
 </div>
-
-
-<!-- jQuery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-<!-- Bootstrap JS -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
 <script th:src="@{/js/login.js}"></script>
-<style>
-    @keyframes shake {
-        0%,100% { transform: translateX(0); }
-        20%      { transform: translateX(-6px); }
-        40%      { transform: translateX(6px); }
-        60%      { transform: translateX(-4px); }
-        80%      { transform: translateX(4px); }
-    }
-</style>
 </body>
 </html>
