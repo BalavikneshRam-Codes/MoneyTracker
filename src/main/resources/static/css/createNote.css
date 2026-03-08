@@ -1,0 +1,130 @@
+/* Color Palette matching your image */
+:root {
+    --bg-color: #3d3b33;
+    --text-color: #dfd4a6;
+    --border-color: #666353;
+    --btn-op-bg: #9b9576;
+    --btn-op-text: #2d2b26;
+    --btn-num-bg: #45433b;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    height: 100vh;
+    margin: 0;
+    overflow: hidden;
+}
+
+/* Mobile app container */
+.app-container {
+    width: 100%;
+    max-width: 450px; /* Constrain width for desktop viewing */
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: 15px;
+}
+
+/* Top Header */
+.header-text { font-weight: 600; cursor: pointer; letter-spacing: 1px; }
+.header-cancel { color: #dcb343; } /* Slightly more yellow for cancel */
+.header-save { color: var(--text-color); }
+
+/* Tabs */
+.nav-tabs {
+    border-bottom: none;
+    justify-content: center;
+    margin-bottom: 20px;
+    gap: 20px;
+}
+.nav-item { color: #8a887a; font-weight: 600; cursor: pointer; }
+.nav-item.active { color: var(--text-color); }
+.nav-divider { border-right: 2px solid var(--border-color); height: 20px; }
+
+/* Inputs & Buttons */
+.custom-border {
+    border: 1px solid var(--text-color);
+    border-radius: 8px;
+}
+.selector-btn {
+    background: transparent;
+    color: var(--text-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    gap: 8px;
+}
+
+textarea.form-control {
+    background-color: transparent;
+    color: var(--text-color);
+    border: 1px solid var(--text-color);
+    resize: none;
+}
+textarea.form-control::placeholder { color: #8a887a; }
+textarea.form-control:focus {
+    background-color: transparent;
+    color: var(--text-color);
+    box-shadow: none;
+    border-color: var(--text-color);
+}
+
+/* Display area */
+.display-area {
+    font-size: 3rem;
+    text-align: right;
+    padding-right: 15px;
+}
+
+/* Keypad Grid */
+.keypad-container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    flex-grow: 1;
+    margin-top: 10px;
+}
+.calc-btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.5rem;
+    font-weight: 600;
+    cursor: pointer;
+    user-select: none;
+}
+.btn-op { background-color: var(--btn-op-bg); color: var(--btn-op-text); }
+.btn-num { background-color: var(--btn-num-bg); color: var(--text-color); }
+.btn-num:active, .btn-op:active { filter: brightness(0.8); } /* Click effect */
+
+/* Footer */
+.footer {
+    border-top: 1px solid var(--border-color);
+    margin-top: 15px;
+    padding-top: 10px;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.datetime-input {
+    background: transparent !important;
+    border: none;
+    color: inherit; /* Inherits your nice text color */
+    text-align: center;
+    width: 100%;
+    cursor: pointer;
+    outline: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+/* Add to your <style> block */
+.error-highlight {
+    border-color: #ff6b6b !important;
+    color: #ff6b6b !important;
+    transition: all 0.3s ease;
+}
