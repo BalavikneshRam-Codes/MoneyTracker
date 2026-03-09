@@ -1,5 +1,6 @@
 package com.bu.MoneyManage.entity;
 
+import com.bu.MoneyManage.security.PasswordEncryptConverter;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -15,6 +16,7 @@ public class User extends BaseEntity{
     private Long userId;
     private String userName;
     private String email;
+    @Convert(converter = PasswordEncryptConverter.class)
     private String password;
     @OneToMany(mappedBy = "user",fetch = FetchType.LAZY,cascade = CascadeType.ALL,orphanRemoval = true)
     private Set<Account> accounts;
