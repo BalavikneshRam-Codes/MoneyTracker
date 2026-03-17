@@ -13,4 +13,8 @@ public class NavigationController {
     public String login() {
         return "login";
     }
+    @GetMapping("/notes")
+    public String notes() {
+        return "notes";
+    }
 }

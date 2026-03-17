@@ -16,13 +16,14 @@ public abstract class BaseController {
     @Autowired
     private INotesService notesService;
 
-    protected BaseVO callingService(BaseVO baseVO,String methodName) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        BaseVO response = null;
-        Class aClass = notesService.getClass();
-        Class<?>[] noparams = {BaseVO.class};
-        Method method = aClass.getDeclaredMethod(methodName,noparams);
-        response = (BaseVO) method.invoke(notesService,baseVO);
-        return response;
+    protected BaseVO callingService(BaseVO baseVO, String methodName) throws Exception {
+        Class<?> clazz = notesService.getClass();
+        Method method = clazz.getDeclaredMethod(methodName, BaseVO.class);
+        try {
+            return (BaseVO) method.invoke(notesService, baseVO);
+        } catch (InvocationTargetException e) {
+            throw (Exception) e.getTargetException();
+        }
     }
     protected BaseItemVO handleException(Exception e,BaseItemVO baseItemVO){
         if(baseItemVO == null)

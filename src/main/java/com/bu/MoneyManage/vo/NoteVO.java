@@ -8,4 +8,8 @@ public class NoteVO {
     private String notesMessage;
     private String recordTime;
     private String recordData;
+    private CategoryVO categoryVO;
+    private AccountVO accountVO;
+    private Double amount;
+    private TransactionVO transactionVO;
 }

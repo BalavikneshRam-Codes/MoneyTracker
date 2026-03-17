@@ -15,4 +15,7 @@ public class NoteReqVO extends BaseVO{
     private String recordDate;
     private String recordTime;
     private Long userId;
+    private String fromDate;
+    private String toDate;
+    private PageableReqVO pageableReqVO;
 }

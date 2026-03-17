@@ -174,6 +174,7 @@ $('.header-save').off('click').on('click', function() {
 
     // --- 3. Build Payload ---
     let noteReqVO = {
+        userId:$("#loggedUserId").val()
         noteMessage: noteMessage,
         recordDate: recordDate,
         recordTime: recordTime,

@@ -4,6 +4,8 @@ import org.springframework.stereotype.Component;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.Locale;
 
@@ -12,6 +14,9 @@ public class DataUtility {
     public static String noteDisplayFormat = "MM dd,yyyy";
     public static String noteTimeDisplayFormat = "hh:mm a";
     public static String noteDateRequestFormat = "MMM dd, yyyy hh:mm a";
+    public static String notesListDateFormat = "MMM dd, EEEE";
+    public static String noteLocalDateFormat = "yyyy-MM-dd";
+
     public String getFormatedDateFromDate(Date date, String format) {
         if (date == null || format == null)
             return null;
@@ -38,6 +43,16 @@ public class DataUtility {
             e.printStackTrace();
             return null;
         }
+    }
+    public String getFormatedDateFromStringDate(LocalDate date, String StringDateFormat,String returnStringFormat) throws ParseException {
+        if (date == null || StringDateFormat == null)
+            return null;
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(StringDateFormat, Locale.ENGLISH);
+        SimpleDateFormat sdfStringFormat = new SimpleDateFormat(StringDateFormat, Locale.ENGLISH);
+        String formattedDate = date.format(formatter);
+        Date date_ = sdfStringFormat.parse(formattedDate);
+        SimpleDateFormat sdfReturnFormat = new SimpleDateFormat(returnStringFormat, Locale.ENGLISH);
+        return sdfReturnFormat.format(date_);
     }
 
 }

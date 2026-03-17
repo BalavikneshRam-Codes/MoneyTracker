@@ -6,4 +6,5 @@ public interface INotesService {
     BaseVO createOrUpdateNote(BaseVO baseVO) throws Exception;
     BaseVO fetchNotesInfo(BaseVO baseVO) throws Exception;
     BaseVO userAuthenticate(BaseVO baseVO) throws Exception;
+    BaseVO fetchNotes(BaseVO baseVO) throws Exception;
 }
